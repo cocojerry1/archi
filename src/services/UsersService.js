@@ -6,7 +6,7 @@ import UsersRepository from '../repositories/UsersRepository.js';
 class UsersService {
   async signUp({ email, password, name, role, confirm }) {
     const isExistUser = await UsersRepository.findByEmail(email);
-    if (isExistUser) throw new Error('User already exists');
+    if (isExistUser) throw new Error('이미존재하는유저입니다');
 
     const hashedPassword = await bcrypt.hash(password, 10);
     return UsersRepository.create({
