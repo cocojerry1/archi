@@ -2,26 +2,45 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UsersRepository from '../repositories/UsersRepository.js';
 
-
 class UsersService {
   async signUp({ email, password, name, role, confirm }) {
+    if (password.length < 6) {
+      throw new Error('비밀번호는 최소 6자 이상이어야 합니다.');
+    }
+
+    if (password !== confirm) {
+      throw new Error('비밀번호가 일치하지 않습니다.');
+    }
+
     const isExistUser = await UsersRepository.findByEmail(email);
-    if (isExistUser) throw new Error('이미존재하는유저입니다');
+    if (isExistUser) throw new Error('이미 존재하는 이메일입니다.');
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return UsersRepository.create({
+    const user = await UsersRepository.create({
       email,
       password: hashedPassword,
       name,
       role,
       confirm,
     });
+
+    return {
+      userId: user.userId,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
   }
 
   async signIn({ email, password }) {
     const user = await UsersRepository.findByEmail(email);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new Error('Invalid credentials');
+    if (!user) {
+      throw new Error('존재하지 않는 이메일입니다.');
+    }
+
+    const passwordIsValid = await bcrypt.compare(password, user.password);
+    if (!passwordIsValid) {
+      throw new Error('비밀번호가 일치하지 않습니다.');
     }
 
     const token = jwt.sign({ userId: user.userId }, 'custom-secret-key', { expiresIn: '12h' });
@@ -29,7 +48,11 @@ class UsersService {
   }
 
   async getUserDetails(userId) {
-    return UsersRepository.findById(userId);
+    const user = await UsersRepository.findById(userId);
+    if (!user) {
+      throw new Error('사용자를 찾을 수 없습니다.');
+    }
+    return user;
   }
 }
 
