@@ -1,8 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import UsersRepository from '../repositories/UsersRepository.js';
 
 class UsersService {
+  constructor(usersRepository) {
+    this.usersRepository = usersRepository;
+  }
+
   async signUp({ email, password, name, role, confirm }) {
     if (password.length < 6) {
       throw new Error('비밀번호는 최소 6자 이상이어야 합니다.');
@@ -12,11 +15,12 @@ class UsersService {
       throw new Error('비밀번호가 일치하지 않습니다.');
     }
 
-    const isExistUser = await UsersRepository.findByEmail(email);
+    // Use the usersRepository instance provided through the constructor
+    const isExistUser = await this.usersRepository.findByEmail(email);
     if (isExistUser) throw new Error('이미 존재하는 이메일입니다.');
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await UsersRepository.create({
+    const user = await this.usersRepository.create({
       email,
       password: hashedPassword,
       name,
@@ -33,7 +37,8 @@ class UsersService {
   }
 
   async signIn({ email, password }) {
-    const user = await UsersRepository.findByEmail(email);
+    // Use the usersRepository instance provided through the constructor
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) {
       throw new Error('존재하지 않는 이메일입니다.');
     }
@@ -48,7 +53,8 @@ class UsersService {
   }
 
   async getUserDetails(userId) {
-    const user = await UsersRepository.findById(userId);
+    // Use the usersRepository instance provided through the constructor
+    const user = await this.usersRepository.findById(userId);
     if (!user) {
       throw new Error('사용자를 찾을 수 없습니다.');
     }
@@ -56,4 +62,4 @@ class UsersService {
   }
 }
 
-export default new UsersService();
+export default UsersService;
