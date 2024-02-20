@@ -1,42 +1,58 @@
-import { prisma } from '../utils/prisma/index.js';
-
 class PostsRepository {
-    async create(data) {
-        return prisma.posts.create({ data });
+    constructor(prisma) {
+      this.prisma = prisma;
     }
-
-    async findAll(orderBy) {
-        return prisma.posts.findMany({
-            orderBy,
+  
+   
+      async create({ userId, title, content }) {
+        return this.prisma.posts.create({
+          data: {
+            userId, // Ensure this is correctly mapped to your Prisma model
+            title,
+            content,
+          },
+        });
+      }
+    
+  
+  
+      async findAll({ orderKey = 'createdAt', orderValue = 'desc' }) {
+        return this.prisma.posts.findMany({
+            orderBy: {
+                [orderKey]: orderValue,
+            },
             select: {
                 content: true,
                 postId: true,
                 title: true,
                 status: true,
                 createdAt: true,
-                user: { select: { name: true } },
+                user: {
+                    select: {
+                        name: true
+                    },
+                },
             },
         });
     }
-
+  
     async findById(postId) {
-        return prisma.posts.findUnique({
-            where: { postId },
-        });
+      return this.prisma.posts.findUnique({
+        where: { postId },
+      });
     }
-
+  
     async update(postId, data) {
-        return prisma.posts.update({
-            where: { postId },
-            data,
-        });
+      return this.prisma.posts.update({
+        where: { postId },
+        data,
+      });
     }
-
+  
     async delete(postId) {
-        return prisma.posts.delete({
-            where: { postId },
-        });
+      return this.prisma.posts.delete({
+        where: { postId },
+      });
     }
 }
-
-export const postsRepository = new PostsRepository();
+export default PostsRepository;
