@@ -1,12 +1,17 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { sendTodayData } from "../middlewares/slackBot.js"
 
 class UsersService {
   constructor(usersRepository) {
     this.usersRepository = usersRepository;
   }
 
+  
   async signUp({ email, password, name, role, confirm }) {
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     if (password.length < 6) {
       throw new Error('비밀번호는 최소 6자 이상이어야 합니다.');
     }
@@ -28,6 +33,13 @@ class UsersService {
       confirm,
     });
 
+    try{
+      await sendTodayData();
+  } catch(err){
+
+      next(err);
+  }
+
     return {
       userId: user.userId,
       email: user.email,
@@ -35,6 +47,8 @@ class UsersService {
       role: user.role,
     };
   }
+
+
 
   async signIn({ email, password }) {
 
