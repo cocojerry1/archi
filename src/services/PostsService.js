@@ -5,9 +5,9 @@ class PostsService {
   }
 
   async createPost({ userId, title, content }) {
-    // Assuming validation is already done in the controller
+
     return this.postsRepository.create({
-      userId: Number(userId), // Ensure userId is a number
+      userId: Number(userId),
       title,
       content,
     });
@@ -21,7 +21,7 @@ class PostsService {
 }
 
   async getPostById(postId) {
-    // Ensure postId is properly converted to a number if necessary
+
     return this.postsRepository.findById(Number(postId));
   }
 
@@ -44,7 +44,7 @@ class PostsService {
     if (!post) {
       throw new Error('게시글 조회에 실패하였습니다.');
     }
-    // Check if the current user is the author or has a special role to delete the post
+
    
     return this.postsRepository.delete(+postId);
   }

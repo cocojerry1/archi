@@ -56,6 +56,5 @@ class PostsController {
   }
 }
 
-// When creating an instance of PostsController, pass the postsService instance.
-// Example: const postsController = new PostsController(postsServiceInstance);
+
 export default PostsController;

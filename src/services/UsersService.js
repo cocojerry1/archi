@@ -15,7 +15,7 @@ class UsersService {
       throw new Error('비밀번호가 일치하지 않습니다.');
     }
 
-    // Use the usersRepository instance provided through the constructor
+ 
     const isExistUser = await this.usersRepository.findByEmail(email);
     if (isExistUser) throw new Error('이미 존재하는 이메일입니다.');
 
@@ -37,7 +37,7 @@ class UsersService {
   }
 
   async signIn({ email, password }) {
-    // Use the usersRepository instance provided through the constructor
+
     const user = await this.usersRepository.findByEmail(email);
     if (!user) {
       throw new Error('존재하지 않는 이메일입니다.');
@@ -53,7 +53,7 @@ class UsersService {
   }
 
   async getUserDetails(userId) {
-    // Use the usersRepository instance provided through the constructor
+
     const user = await this.usersRepository.findById(userId);
     if (!user) {
       throw new Error('사용자를 찾을 수 없습니다.');

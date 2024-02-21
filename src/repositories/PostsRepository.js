@@ -7,7 +7,7 @@ class PostsRepository {
       async create({ userId, title, content }) {
         return this.prisma.posts.create({
           data: {
-            userId, // Ensure this is correctly mapped to your Prisma model
+            userId, 
             title,
             content,
           },
