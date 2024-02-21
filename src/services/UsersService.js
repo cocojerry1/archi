@@ -49,8 +49,11 @@ class UsersService {
     }
 
     const token = jwt.sign({ userId: user.userId }, 'custom-secret-key', { expiresIn: '12h' });
-    return { user, token };
+    const refreshToken = jwt.sign({ userId: user.userId }, 'custom-refresh-secret-key', { expiresIn: '7D' });
+    await this.usersRepository.saveToken(user.userId, refreshToken);
+    return { token, refreshToken };
   }
+  
 
   async getUserDetails(userId) {
 

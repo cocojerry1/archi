@@ -17,8 +17,9 @@ class UsersController {
 
   async signIn(req, res, next) {
     try {
-      const { user, token } = await this.usersService.signIn(req.body);
+      const { user, token, refreshToken } = await this.usersService.signIn(req.body);
       res.cookie('authorization', `Bearer ${token}`);
+      res.cookie('refreshToken',  `Bearer ${refreshToken}`);
       res.status(200).json({ message: '로그인 성공', user });
     } catch (error) {
       next(error);
